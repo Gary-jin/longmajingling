@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no" />
+		<title>index</title>
+	</head>
+	<body>
+		<div id="app" v-cloak></div>
+  </body>
+  <script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./js/common.js" type="text/javascript" charset="utf-8"></script>
+</html>
+<script type="text/javascript">
+	var url = '<%= process.env.VUE_APP_ENTRY_PRD %>'
+	<% if(process.env.NODE_ENV === 'development') { %>
+	url = '<%= process.env.VUE_APP_ENTRY_DEV %>'
+	<% } %>
+	apiready = function() {
+		window.vm = new Vue({
+			el: '#app',
+			data: {
+				chuanshanjiaAds: api.require("chuanshanjiaAds"),
+				tencentAds: api.require('tencentAds'),
+				//  引入cont.js 报错 所以这样写
+				//todo 删除底下两个url
+				url:'http://lmjl.tongquan.gold/api/home/advert', // 检查后台广告开关  正式
+				// url:'http://longmajingling.vmall99.com/api/home/advert', // 检查后台广告开关
+				splashId:'887382639',//穿山甲开屏广告id
+			},
+			created: function() {
+				this.agreement()
+				this.yincang()
+			},
+			mounted: function() {
+			},
+			methods: {
+				// 隐私协议
+				agreement() {
+            if ( !this.getStorage('agreement') ) {
+                this.http('http://lmjl.tongquan.gold/api/article/get_articles',{type: '5'}).then(res => {
+                    // alert(JSON.stringify(res.data))
+                    api.openFrame({
+                        name: 'common-agreementFrame',
+                        url: './common-agreementFrame.html',
+                        rect: {
+                            x: 0,
+                            y: 0,
+                            w: 'auto',
+                            h: 'auto'
+                        },
+                        pageParam: {
+                            name: res.data.info
+                        }
+                    });
+                })
+            } else {
+							this.init();
+							// this.initAd(1)
+						}
+				},
+				// 上架隐藏
+				yincang () {
+					var that = this;
+					let sysType;
+					if(api.systemType == 'ios'){
+							sysType = {type:'ios'}
+					} else{
+							sysType = ''
+					}
+					this.http('http://lmjl.tongquan.gold/api/home/get_is_display',sysType).then(function(res) {
+						if (res.code == 0) {
+							that.setStorage('yincang',res.data.is_display)
+						}
+					})
+				},
+				//调用开屏广告方法
+				init: function() {
+					var that = this;
+					// todo 广告开关初始化接口地址使用错误
+					that.http(that.url).then(function(res) {
+							if (res.code == 0) {
+                that.initAd(Number(res.data.switch));
+                that.setStorage('isgg',res.data.switch);
+							}
+						});
+				},
+				//获取0~1的随机数
+				getranum :function(start,end){
+					return Math.floor(Math.random() * (end - start) + start)
+				},
+				//调用开屏广告
+				initAd: function(type) {
+					var that = this;
+					type == 2 ? type = this.getranum( 2 , 0 ) : type;
+					switch (type) {
+						case 0: //穿山甲
+							that.chuanshanjiaAds.init(function(ret, err) {
+								console.log("ret:" + JSON.stringify(ret));
+								console.log("err:" + JSON.stringify(err));
+								that.showSplashAd();
+							});
+							break;
+						case 1: //优量汇
+							that.tencentAds.showSplash({},
+								function(ret, err) {
+									// alert(JSON.stringify(ret))
+									// alert(JSON.stringify(err))
+									console.log("ret:" + JSON.stringify(ret));
+									console.log("err:" + JSON.stringify(err));
+									if (ret.status === 'close'||ret.status === false||ret.status === 'onclick'|| ret.status === 'onADExposure') { // || ret.status === 'onADExposure'
+										api.openWin({
+												name: 'home',
+												url: './home.html',
+												useWKWebView: true,
+												reload:true,
+												slidBackEnabled:false
+										});
+									}else if(err){
+										api.openWin({
+												name: 'home',
+												url: './home.html',
+												useWKWebView: true,
+												reload:true,
+												slidBackEnabled:false
+										});
+									}
+								});
+							break;
+						default:
+							// api.openWin({
+							// 	name: 'home',
+							// 	url: './home.html',
+							// 	reload:true,
+							// 	slidBackEnabled:false
+							// });
+							break;
+					}
+
+
+				},
+				//穿山甲 
+				showSplashAd: function() { //展示开屏广告
+					var that = this;
+					var param = {
+						adId: that.splashId
+					};
+					that.chuanshanjiaAds.showSplashAd(param, function(ret, err) {
+						console.log("ret:" + JSON.stringify(ret));
+						console.log("err:" + JSON.stringify(err));
+						if (
+							ret &&
+							(ret.eventType === "onAdTimeOver" ||
+								ret.eventType === "onAdSkip" ||
+								ret.eventType === "onAdDismiss" ||
+								ret.eventType === "onAdWillClose")
+						) {
+							api.openWin({
+									name: 'home',
+									url: './home.html',
+									useWKWebView: true,
+									reload:true,
+									slidBackEnabled:false
+							});
+						} else if (err) {
+							api.openWin({
+									name: 'home',
+									url: './home.html',
+									useWKWebView: true,
+									reload:true,
+									slidBackEnabled:false
+							});
+						}
+					});
+				}
+			}
+		})
+	};
+</script>

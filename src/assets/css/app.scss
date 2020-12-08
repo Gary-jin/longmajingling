@@ -1,0 +1,111 @@
+// $jianbian:linear-gradient(to right,#ff8676,#ff2a2e); /*颜色渐变*/
+$jianbian:linear-gradient(to right,#3F65FF,#1179FF); /*颜色渐变*/
+.van-nav-bar{
+  background: $jianbian;
+}
+.header{
+  box-sizing: content-box;
+}
+.jianbian {
+  background:$jianbian;
+}
+.borderColor_ccc {
+  border-bottom:1px solid #cccccc;
+}
+.van-nav-bar__title,.van-nav-bar .van-icon{
+  color: white;
+}
+input{
+  color: #333;
+}
+input::placeholder{
+  color: #999;
+
+}
+.login {
+  background-image: linear-gradient(to right, #FF6F5D, #FF2A2E);
+  color: white;
+}
+html,body,#app{
+  height: 100%;
+}
+.flex{
+  display: flex;
+  height: 100%;
+  flex-flow: column;
+  box-sizing: border-box;
+  align-items: stretch;
+}
+.no_cg{
+  flex-shrink: 0;
+}
+
+section{
+  width: 100%;
+  align-items:stretch;
+  height: 100%;
+  justify-content: stretch;
+  overflow-y: scroll;
+}
+section.pt_20{
+  width: 100%;
+  height: 100%;
+  align-items:stretch;
+  justify-content: stretch;
+  overflow-y: scroll;
+  padding-top: 20px;
+}
+.iconshang {
+  margin-bottom: -3.5px!important;
+}
+.title_0{
+   div{
+     box-sizing: content-box;
+     padding-left: 20px;
+     h1{
+       box-sizing: content-box;
+       border-left: 3px solid #3F65FF ;
+       padding-left: 10px;
+     }
+   }
+}
+.flex_between{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.van-nav-bar__text:active {
+  background-color:transparent;
+}
+.p_center{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+.v-dialog{
+  position: relative;
+  display: flex;
+  padding: 4px 7px;
+  color: white;
+  margin-right: calc(-50% + 20px);
+  background-color: rgba(0,0,0,.2);
+  margin-top:10px;
+  border-radius: 3px;
+  white-space: nowrap;
+  &::before{
+    content: "";
+    display: block;
+    height: 0;
+    border: 6px solid  transparent;
+    border-bottom-color: rgba(0,0,0,.2);
+    position: absolute;
+    top:-12px;
+    left: 50%;
+    margin-left: -2px;
+  }
+}
+/*下拉刷新*/
+.van-pull-refresh__track{
+  height: 100%;
+}
